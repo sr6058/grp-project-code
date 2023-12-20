@@ -1,0 +1,187 @@
+---
+title: "Final Assignment"
+author: "Ruqayyah Mohamed Irshadeen, Ameya Bhatnagar, Smriti Ramachandran"
+date: "2023-12-20"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+setwd("~/Documents/nyu/Final Assignment")
+
+library(tidyverse)
+library(lmtest)
+library(stargazer)
+library(dplyr)
+library(mfx)
+library(ivreg)
+library(plm)
+
+
+
+Education<-read.csv("~/Data Analysis/Data Analysis/New folder/sect2_education.csv", na.strings = " " )
+Health<-read.csv("~/Data Analysis/Data Analysis/New folder/sect3_health.csv", na.strings = " ")
+Roster<-read.csv("~/Data Analysis/Data Analysis/New folder/sect1_roster.csv", na.strings = " ")
+Labor<-read.csv("~/Data Analysis/Data Analysis/New folder/sect4a1_labour.csv", na.strings = " ")
+```
+# Research Question
+
+**What are the most significant factors affecting Carbon dioxide emissions across countries from 1996 to 2020?**  
+
+## Method  
+
+This question will be investigated through a panel regression model using individual and time fixed effects. In this case, the individual fixed effects will be state fixed effects:
+
+$$Carbon=\beta_0+\beta_1tax_{it}+\beta_2low.carbon.trade_{it}+\beta_3renewable.energy_{it}+\beta_4surface.temp_{it}+\beta_5env.expenditure_{it}+u_i$$
+# Literature Review. 
+In this literature review, we aim to explore the background behind choosing specifically the variables environmental tax rates, government spending on environmental protection, renewable energy utilization, comparative advantage in low-carbon technology trade, forest area and carbon stocks, climate risk indicators, carbon footprint of bank loans, changes in mean sea levels, and alterations in land cover.  
+
+A study by Dogan et al (2022) showed taxes in G7 countries actually could be used as an effective instrument for lowering carbon emissions. The study added the revenue from imposing such a tax should be directed towards climate welfare for citizens, which could be simultaneous causality we may need to correct for (one sided).  
+
+Furthermore, a paper by Shanazi and Shabani (2019) reported that using renewable energy contributes to reducing carbon dioxide (and consequently carbon) emissions based on their study of the EU and therefore it is important to adapt policies to increase and encourage the use of RE (one sided).  
+
+Additionally, a study based in Iran actually found no evidence regarding the hypothesis that spending more on governmental protection aids in improving the environmental quality. However, one argument the authors use is that this could be because the proportion of government expenditure could have been too small with regards to the overall GDP of the economy, or that the country simply has too low of an income threshold for there to be significant effects of government expenditure on the environment (Moshiri& Daneshmand, 2020). In our study we could incorporate this test by either adding dummy variables for the country’s GDP being high or low (one sided).  
+(fte)
+Low carbon technology intuitively signals its audience to believe an increase in its usage would be reflected by lower carbon emissions. However we want to include this in our regression to see if or if not trading this technology, that has piqued a lot of interest from governments and businesses alike, will actually have a significant effect in reducing carbon emissions (two sided-one sided?).   
+
+Additionally, a study (Tubiello et al., 2021) actually found that as per their estimates of emissions and forest land removal, that forests act as a relatively small global carbon sink. Our study will aim to test that claim as per our data and whether or not forest area cover affects a country’s carbon emissions (two sided). We are including our alterations in land cover variable in tandem with this- the alterations variable would help us determine for a particular state if forest cover increasing or decreasing from the existing forest cover (that is accounted for in our forest area variable) has an effect on carbon emissions (two sided).  
+
+The Carbon Footprint of Bank Loans is an IMF indicator intended to demonstrate the carbon footprint of financial institutions, and as the name suggests focuses on the estimated carbon footprint of these institutions giving loans. However, the data is currently only available for 41 countries ()?  
+
+We are including sea levels in our analysis because sea levels are a surface climate change indicator. In particular, sea levels are supposed to respond to increasing temperatures, which are a result of global warming that is attributed to rising carbon emissions (Williams et al, 2012). We therefore want to include it in our observation to test if increasing sea levels reflect increasing carbon emissions.  
+
+# Hypotheses to be tested
+
+1.  Environmental Taxes: Countries with higher tax rates have lower CO2 emissions.
+$$H_0: \beta_1=0$$
+$$H_1: \beta_1<0$$
+2. Comparative advantage in low-carbon technology trade : Countries with higher comparative advantage in low-carbon technology trade have lower CO2 emissions.
+$$H_0: \beta_2=0$$
+$$H_1: \beta_2<0$$
+3. Renewable Energy : Countries using more renewable energy have lower CO2 emissions.
+$$H_0: \beta_3=0$$
+$$H_1: \beta_3<0$$
+4. Surface Temperature : Higher surface temperatures reflect higher CO2 emissions.
+$$H_0: \beta_4=0$$
+$$H_1: \beta_4>0$$
+5. Environmental Expenditure: Higher environmental expenditure reflects lower CO2 emissions.
+$$H_0: \beta_5=0$$
+$$H_1: \beta_4<0$$
+\newpage
+# Creating a Merged Data Set
+## Imporgint the relevant datasets
+
+```{r}
+library(readxl)
+#clean and convert the co2 dataset to a csv
+Combined_Dataset_Econometrics <- read_excel("Combined Dataset - Econometrics.xlsx")
+lowcarb<-read.csv("~/Documents/nyu/Final Assignment/transformed_trade_low_carbon_tech_corrected.csv", na.strings="")
+renewable<-read.csv("~/Documents/nyu/Final Assignment/transformed_renewable_energy.csv", na.strings="")
+env_tax<-read.csv("~/Documents/nyu/Final Assignment/transformed_environmental_taxes.csv", na.strings="")
+env_exp<-read.csv("~/Documents/nyu/Final Assignment/transformed_environmental_protection_expenditures_corrected.csv", na.strings="")
+surface_temp<-read.csv("~/Documents/nyu/Final Assignment/transformed_annual_surface_temp.csv", na.strings="")
+```
+
+## **Data Merging**
+
+```{r}
+#add co2 please
+final_set <- inner_join(lowcarb, renewable,by=c('Year', 'Country',
+                            'ISO3')) %>% 
+  inner_join(env_tax,by=c('Year', 'Country','ISO3')) %>%  
+  inner_join(env_exp, by=c('Year', 'Country',
+                            'ISO3'))  %>%  
+  inner_join(surface_temp, by=c('Year', 'Country',
+                            'ISO3')) 
+  
+```
+## **Data Renaming**
+```{r}
+final_set <- final_set %>% 
+    rename(lowcarbon = Trade.in.Low.Carbon.Technology.Index, renewable.energy = Renewable.Energy.Capacity..MW., env.tax = Environmental.Taxes, 
+           env.exp = Environmental.Protection.Expenditures, surface.temp=Annual.Surface.Temperature.Change)
+```
+
+\newpage
+# Data Wrangling
+```{r}
+#set up an instrumental variable
+#use the f test
+#then use the j test
+```
+
+# **Visualizations**. 
+
+visualizing the variables being used allows us to understand if we further need to remove or clean the variables so they follow a fairly normal distributuion with no significant outliers to satisfy assumptions we make using panel data regressions.
+```{r}
+# We can use qqplots here
+# We can also do boxplots and histograms here
+# I am providing base code, edit as needed!
+#qqcode vv important
+#env.tax
+qqnorm(final_set$env.tax)
+qqline(final_set$env.tax)
+# doesnt seem normal
+hist(final_set$env.tax)
+hist(log(final_set$env.tax))
+
+#lowcarbon
+qqnorm(final_set$lowcarbon)
+qqline(final_set$lowcarbon)
+#not normal needs transformation
+hist(log(final_set$lowcarbon))
+
+#renewable energy
+qqnorm(final_set$renewable.energy)
+qqline(final_set$renewable.energy)
+#not normal needs transformation
+hist(log(final_set$renewable.energy))
+
+#surface temperature
+qqnorm(final_set$surface.temp)
+qqline(final_set$surface.temp)
+#appears normal
+
+#environmental expenditure
+qqnorm(final_set$env.exp)
+qqline(final_set$env.exp)
+#not normal needs transformation
+hist(log(final_set$env.exp))
+```
+# **Transformations**. 
+
+As can be inferred from the above plots, the variables $env.tax$, $lowcarbon$, $renewable.energy$,and $env.exp$ are not distributed normally and therefore have to be trnasformed to their log values that seem to be more normally distributed. However,  $surface.temp$ appears to be normally distributed and therefore can be left as is.
+```{r}
+#transformation code
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
