@@ -109,7 +109,7 @@ final_set <- final_set %>%
 ```{r}
 #set up an instrumental variable
 #use the f test
-#then use the j test
+
 ```
 
 # **Visualizations**. 
