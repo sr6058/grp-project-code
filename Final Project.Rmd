@@ -9,12 +9,14 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 setwd("~/Documents/nyu/Final Assignment")
 
+# install.packages("AER")
 library(tidyverse)
 library(lmtest)
 library(stargazer)
 library(dplyr)
 library(mfx)
 library(ivreg)
+library(AER)
 library(plm)
 
 ```
@@ -68,13 +70,13 @@ $$H_1: \beta_4<0$$
 ```{r}
 library(readxl)
 #clean and convert the co2 dataset to a csv
-Combined_Dataset_Econometrics <- read_excel("Combined Dataset - Econometrics.xlsx")
-lowcarb<-read.csv("~/Documents/nyu/Final Assignment/transformed_trade_low_carbon_tech_corrected.csv", na.strings="")
-renewable<-read.csv("~/Documents/nyu/Final Assignment/transformed_renewable_energy.csv", na.strings="")
-env_tax<-read.csv("~/Documents/nyu/Final Assignment/transformed_environmental_taxes.csv", na.strings="")
-env_exp<-read.csv("~/Documents/nyu/Final Assignment/transformed_environmental_protection_expenditures_corrected.csv", na.strings="")
-surface_temp<-read.csv("~/Documents/nyu/Final Assignment/transformed_annual_surface_temp.csv", na.strings="")
-gdppercapita<-read.csv("~/Documents/nyu/Final Assignment/GDP_per_capita.csv", na.strings = "")
+Combined_Dataset_Econometrics <- read.csv("Combined Dataset - Econometrics.csv", na.stings = c("NA", ".."))
+lowcarb<-read.csv("~/Documents/nyu/Final Assignment/transformed_trade_low_carbon_tech_corrected.csv", na.strings=c("NA", ".."))
+renewable<-read.csv("~/Documents/nyu/Final Assignment/transformed_renewable_energy.csv", na.strings= c("NA", ".."))
+env_tax<-read.csv("~/Documents/nyu/Final Assignment/transformed_environmental_taxes.csv", na.strings= c("NA", ".."))
+env_exp<-read.csv("~/Documents/nyu/Final Assignment/transformed_environmental_protection_expenditures_corrected.csv", na.strings= c("NA", ".."))
+surface_temp<-read.csv("~/Documents/nyu/Final Assignment/transformed_annual_surface_temp.csv", na.strings= c("NA",".."))
+gdppercapita<-read.csv("~/Documents/nyu/Final Assignment/GDP_per_capita.csv", na.strings = c("NA", ".."))
 ```
 
 ## **Data Merging**
@@ -89,29 +91,22 @@ final_set <- inner_join(lowcarb, renewable,by=c('Year', 'Country',
   inner_join(env_exp, by=c('Year', 'Country',
                             'ISO3'))  %>%
   inner_join(gdppercapita, by=c('Year', 'Country',
-                            'ISO3'))
+                            'ISO3')) %>%
+  inner_join(Combined_Dataset_Econometrics, by = c('Year', 'ISO3'))
   
 ```
 ## **Data Renaming**
 ```{r}
 final_set <- final_set %>% 
     rename(lowcarbon = Trade.in.Low.Carbon.Technology.Index, renewable.energy = Renewable.Energy.Capacity..MW., env.tax = Environmental.Taxes, 
-           env.exp = Environmental.Protection.Expenditures, gdp=Value)
+           env.exp = Environmental.Protection.Expenditures, gdp=Value, CO2=CO2.Emissions)
+final_set <- na.omit(final_set)
 ```
 
 \newpage
 # Data Wrangling
 ## Data Description
-To determine the factors that effect the CO2 emissions in different countries over a period of 20 year, this project uses 5 different datasets contaning information about trade in low carbon technology, use of renewable energy (from all renewable energy sources), environmental texes levied in the country, the government expenditure (as a percent of GDP) on environmtnal protection and conservation and the GDP per capita (in current US Dollars) in each country. The datasets have data for approximately 200 countries spanning over 20 years, from 2000 to 2020. For any missing observations in the datasets, the values are set to 0 for ease of computation.
-
-## Instrumental Variables
-
-The $gdp$ variable in the final set is actually GDP per capita values for each country, and is uncluded in the regression as an instrumental variable for the environmental expenditrue variable $env.exp$. The variable is significant if in the first step of two stage least squares the F-statistic exceeds 10.
-```{r}
-#set up an instrumental variable
-#then set up f test
-
-```
+To determine the factors that effect the CO2 emissions in different countries over a period of 20 year, this project uses 5 different datasets contaning information about trade in low carbon technology, use of renewable energy (from all renewable energy sources), environmental texes levied in the country, the government expenditure (as a percent of GDP) on environmtnal protection and conservation and the GDP per capita (in current US Dollars) in each country. The datasets have data for approximately 200 countries spanning over 20 years, from 2000 to 2020. For any missing observations in the datasets have been eliminated for ease of running regressions and carrying out further analysis.
 
 # **Visualizations**. 
 
@@ -161,28 +156,45 @@ final_set %>%
          log.env.exp=log(env.exp),
          log.lowcarbon=log(lowcarbon),
          log.renewable.energy=log(renewable.energy))
+cleaned_data <- final_set %>%
+  filter_all(all_vars(!is.infinite(.)))
 ```
+## Instrumental Variables
+
+The $gdp$ variable in the final set is actually GDP per capita values for each country, and is uncluded in the regression as an instrumental variable for the environmental expenditrue variable $env.exp$. The variable is significant if in the first step of two stage least squares the F-statistic exceeds 10.
+```{r}
+#set up an instrumental variable
+
+#then set up f test
+
+```
+
 # Regressions  
 # Regressions  
+``` {r}
+# Adding indices to our panel data
+cleaned_data <- pdata.frame(cleaned_data, index = c("Country", "Year"), drop.index = TRUE, row.names = TRUE)
+```
 ## Pooled regression
 ```{r}
-emissions.pool <- plm(CO2 ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp + gdp , data = final_set, model = "pooling") 
+emissions.pool <- plm(CO2.Emissions ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp + gdp , data = cleaned_data, model = "pooling") 
 summary(fatality.pool, vcov = vcovHC) #clustered SDs
 ```
+
 ## Fixed Individual Effects Regression
 ```{r}
-emissions.fe <- plm(CO2 ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp+ gdp , data = final_set, model = "within", effect="individual")
+emissions.fe <- plm(CO2.Emissions ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp+ gdp , data = cleaned_data, model = "within", effect="individual")
 summary(emissions.fe, vcov = vcovHC)
 ```
 ## Fixed Time Effects Regression
 ```{r}
-emissions.te <- plm(CO2 ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp + gdp , data = final_set, model = "within", effect="time")
+emissions.te <- plm(CO2.Emissions ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp + gdp , data = cleaned_data, model = "within", effect="time")
 summary(emissions.te, vcov = vcovHC)
 ```
 ## Fixed Individual and Time Effects Regression
 ```{r}
 #fte code
-emissions.fte <- plm(CO2 ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp + gdp , data = final_set,
+emissions.fte <- plm(CO2.Emissions ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp + gdp , data = cleaned_data,
 model = "within", effect="twoways")
 summary(emissions.fte, vcov = vcovHC)
 
@@ -192,6 +204,7 @@ summary(emissions.fte, vcov = vcovHC)
 ```
 \newpage
 # ** Model Interpretations**
+The adjusted $R^2$ of the fixed time effects model is the largest and hence, we decide t o go ahead woth that model. 
 
 ## Choosing the Best Model  
 ## Interpretations for each coefficient
