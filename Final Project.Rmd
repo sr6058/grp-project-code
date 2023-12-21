@@ -159,11 +159,11 @@ The $gdp$ variable in the final set is actually GDP per capita values for each c
 
 ```{r instrumental variable}
 # tax is our control variable, remove trade in low carbon technology
-first_IV <- lm(renewable.energy ~ urban_pop + env.tax, data = cleaned_data)
-summary(first_IV) # f-stat : 25
+first_IV <- lm(log.renewable.energy ~ urban_pop + log.env.tax  + log.lowcarbon, data = cleaned_data)
+summary(first_IV) # f-stat : 110
 
-second_IV <- lm(env.exp ~ gdp + env.tax, data = cleaned_data)
-summary(second_IV) # f-stat : 84
+second_IV <- lm(log.env.exp ~ gdp + log.env.tax  + log.lowcarbon, data = cleaned_data)
+summary(second_IV) # f-stat : 150
 
 # They are relevant instruments
 ```
