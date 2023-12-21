@@ -96,11 +96,14 @@ final_set <- inner_join(lowcarb, renewable,by=c('Year', 'Country',
 ```{r}
 final_set <- final_set %>% 
     rename(lowcarbon = Trade.in.Low.Carbon.Technology.Index, renewable.energy = Renewable.Energy.Capacity..MW., env.tax = Environmental.Taxes, 
-           env.exp = Environmental.Protection.Expenditures, surface.temp=Annual.Surface.Temperature.Change, gdp=Value)
+           env.exp = Environmental.Protection.Expenditures, gdp=Value)
 ```
 
 \newpage
 # Data Wrangling
+## Data Description
+To determine the factors that effect the CO2 emissions in different countries over a period of 20 year, this project uses 5 different datasets contaning information about trade in low carbon technology, use of renewable energy (from all renewable energy sources), environmental texes levied in the country, the government expenditure (as a percent of GDP) on environmtnal protection and conservation and the GDP per capita (in current US Dollars) in each country. The datasets have data for approximately 200 countries spanning over 20 years, from 2000 to 2020. For any missing observations in the datasets, the values are set to 0 for ease of computation.
+
 ## Instrumental Variables
 
 The $gdp$ variable in the final set is actually GDP per capita values for each country, and is uncluded in the regression as an instrumental variable for the environmental expenditrue variable $env.exp$. The variable is significant if in the first step of two stage least squares the F-statistic exceeds 10.
