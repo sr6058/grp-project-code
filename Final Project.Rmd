@@ -87,9 +87,7 @@ final_set <- inner_join(lowcarb, renewable,by=c('Year', 'Country',
                             'ISO3')) %>% 
   inner_join(env_tax,by=c('Year', 'Country','ISO3')) %>%  
   inner_join(env_exp, by=c('Year', 'Country',
-                            'ISO3'))  %>%  
-  inner_join(surface_temp, by=c('Year', 'Country',
-                            'ISO3')) %>%  
+                            'ISO3'))  %>%
   inner_join(gdppercapita, by=c('Year', 'Country',
                             'ISO3'))
   
