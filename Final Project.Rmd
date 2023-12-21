@@ -7,7 +7,8 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-setwd("/Users/ameyabhatnagar/Desktop/Econometrics/Project")
+setwd("~/Documents/nyu/Final Assignment")
+
 library(tidyverse)
 library(lmtest)
 library(stargazer)
@@ -15,6 +16,7 @@ library(dplyr)
 library(mfx)
 library(ivreg)
 library(plm)
+
 ```
 # Research Question
 
@@ -66,49 +68,47 @@ $$H_1: \beta_4<0$$
 ```{r}
 library(readxl)
 #clean and convert the co2 dataset to a csv
-Combined_Dataset_Econometrics <- read.csv("/Users/ameyabhatnagar/Desktop/Econometrics/Project/Combined Dataset - Econometrics.csv", na.strings = "")
-lowcarb<-read.csv("/Users/ameyabhatnagar/Desktop/Econometrics/Project/transformed_trade_low_carbon_tech_corrected.csv", na.strings="")
-renewable<-read.csv("/Users/ameyabhatnagar/Desktop/Econometrics/Project/transformed_renewable_energy.csv", na.strings="")
-env_tax<-read.csv("/Users/ameyabhatnagar/Desktop/Econometrics/Project/transformed_environmental_taxes.csv", na.strings="")
-env_exp<-read.csv("/Users/ameyabhatnagar/Desktop/Econometrics/Project/transformed_environmental_protection_expenditures_corrected.csv", na.strings="")
-surface_temp<-read.csv("/Users/ameyabhatnagar/Desktop/Econometrics/Project/transformed_annual_surface_temp.csv", na.strings="")
-gdp_per_capita <- read.csv("/Users/ameyabhatnagar/Desktop/Econometrics/Project/GDP_per_capita.csv", na.strings = "")
-land_cover <- read.csv("/Users/ameyabhatnagar/Desktop/Econometrics/Project/Land_Cover_Accounts-2.csv", na.strings = "") 
-land_cover <- land_cover[order(land_cover$Country), ]
+Combined_Dataset_Econometrics <- read_excel("Combined Dataset - Econometrics.xlsx")
+lowcarb<-read.csv("~/Documents/nyu/Final Assignment/transformed_trade_low_carbon_tech_corrected.csv", na.strings="")
+renewable<-read.csv("~/Documents/nyu/Final Assignment/transformed_renewable_energy.csv", na.strings="")
+env_tax<-read.csv("~/Documents/nyu/Final Assignment/transformed_environmental_taxes.csv", na.strings="")
+env_exp<-read.csv("~/Documents/nyu/Final Assignment/transformed_environmental_protection_expenditures_corrected.csv", na.strings="")
+surface_temp<-read.csv("~/Documents/nyu/Final Assignment/transformed_annual_surface_temp.csv", na.strings="")
+gdppercapita<-read.csv("~/Documents/nyu/Final Assignment/GDP_per_capita.csv", na.strings = "")
 ```
 
 ## **Data Merging**
 
 ```{r}
-final_set <- inner_join(lowcarb, renewable,by=c('Year',
+#add co2 please
+gdppercapita<-gdppercapita %>%
+  rename(Country=Country.Name, ISO3=Country.Code)
+final_set <- inner_join(lowcarb, renewable,by=c('Year', 'Country',
                             'ISO3')) %>% 
-  inner_join(env_tax,by=c('Year','ISO3')) %>%  
-  inner_join(env_exp, by=c('Year',
+  inner_join(env_tax,by=c('Year', 'Country','ISO3')) %>%  
+  inner_join(env_exp, by=c('Year', 'Country',
                             'ISO3'))  %>%  
-  inner_join(surface_temp, by=c('Year',
-                            'ISO3')) %>%
-  inner_join(Combined_Dataset_Econometrics, by = c('Year', 'ISO3')) %>%
-  inner_join(gdp_per_capita, by = c('Year', 'ISO3')) %>%
-  inner_join(land_cover, by = c('Year', 'ISO3'))
-
-
+  inner_join(surface_temp, by=c('Year', 'Country',
+                            'ISO3')) %>%  
+  inner_join(gdppercapita, by=c('Year', 'Country',
+                            'ISO3'))
   
-final_set <- subset(final_set, select = -c(Country.x, Country.y, Country.x.x, Country.y.y, Country.Name))
 ```
-
 ## **Data Renaming**
-
 ```{r}
 final_set <- final_set %>% 
     rename(lowcarbon = Trade.in.Low.Carbon.Technology.Index, renewable.energy = Renewable.Energy.Capacity..MW., env.tax = Environmental.Taxes, 
-           env.exp = Environmental.Protection.Expenditures, surface.temp=Annual.Surface.Temperature.Change)
+           env.exp = Environmental.Protection.Expenditures, surface.temp=Annual.Surface.Temperature.Change, gdp=Value)
 ```
 
 \newpage
 # Data Wrangling
+## Instrumental Variables
+
+The $gdp$ variable in the final set is actually GDP per capita values for each country, and is uncluded in the regression as an instrumental variable for the environmental expenditrue variable $env.exp$. The variable is significant if in the first step of two stage least squares the F-statistic exceeds 10.
 ```{r}
 #set up an instrumental variable
-#use the f test
+#then set up f test
 
 ```
 
@@ -152,10 +152,57 @@ hist(log(final_set$env.exp))
 ```
 # **Transformations**. 
 
-As can be inferred from the above plots, the variables $env.tax$, $lowcarbon$, $renewable.energy$,and $env.exp$ are not distributed normally and therefore have to be transformed to their log values that seem to be more normally distributed. However,  $surface.temp$ appears to be normally distributed and therefore can be left as is.
+As can be inferred from the above plots, the variables $env.tax$, $lowcarbon$, $renewable.energy$,and $env.exp$ are not distributed normally and therefore have to be trnasformed to their log values that seem to be more normally distributed. However,  $surface.temp$ appears to be normally distributed and therefore can be left as is.
 ```{r}
 #transformation code
+final_set %>%
+  mutate(log.env.tax=log(env.tax),
+         log.env.exp=log(env.exp),
+         log.lowcarbon=log(lowcarbon),
+         log.renewable.energy=log(renewable.energy))
 ```
+# Regressions  
+## Pooled regression
+```{r}
+#pooled code
+```
+## Fixed Individual Effects Regression
+```{r}
+#ie code
+```
+## Fixed Time Effects Regression
+```{r}
+#te code
+```
+## Fixed Individual and Time Effects Regression
+```{r}
+#fte code
+```
+## Comparison with each other
+```{r}
+#Stargazer code to display coefficients and AIC. Select the best model. Add interpretations below.
+```
+\newpage
+# ** Model Interpretations**
+
+## Choosing the Best Model  
+## Interpretations for each coefficient
+
+\newpage
+# ** Limitations**
+# ** References
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
