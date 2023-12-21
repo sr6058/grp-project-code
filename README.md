@@ -15,3 +15,5 @@ coeftest(tsls, vcov = vcovHC, type = "HC1")
 
 # pooling regression
 fatality.pool <- plm(mrall~beertax, data = fatality.pd, model = "pooling")
+
+summary(fatality.pool, vcov = vcovHC)
