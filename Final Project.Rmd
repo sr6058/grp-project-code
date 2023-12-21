@@ -162,22 +162,29 @@ final_set %>%
          log.renewable.energy=log(renewable.energy))
 ```
 # Regressions  
+# Regressions  
 ## Pooled regression
 ```{r}
-#pooled code
+emissions.pool <- plm(CO2 ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp + land_cover + gdp , data = final_set, model = "pooling") 
+summary(fatality.pool, vcov = vcovHC) #clustered SDs
 ```
 ## Fixed Individual Effects Regression
 ```{r}
-#ie code
+emissions.fe <- plm(CO2 ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp + land_cover + gdp , data = final_set, model = "within", effect="individual")
+summary(emissions.fe, vcov = vcovHC)
 ```
 ## Fixed Time Effects Regression
 ```{r}
-#te code
+emissions.te <- plm(CO2 ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp + land_cover + gdp , data = final_set, model = "within", effect="time")
+summary(emissions.te, vcov = vcovHC)
 ```
 ## Fixed Individual and Time Effects Regression
 ```{r}
 #fte code
-```
+emissions.fte <- plm(CO2 ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp + land_cover + gdp , data = final_set,
+model = "within", effect="twoways")
+summary(emissions.fte, vcov = vcovHC)
+
 ## Comparison with each other
 ```{r}
 #Stargazer code to display coefficients and AIC. Select the best model. Add interpretations below.
