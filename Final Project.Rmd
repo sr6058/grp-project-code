@@ -28,7 +28,8 @@ library(plm)
 
 This question will be investigated through a panel regression model using individual and time fixed effects. In this case, the individual fixed effects will be state fixed effects:
 
-$$Carbon=\beta_0+\beta_1tax_{it}+\beta_2low.carbon.trade_{it}+\beta_3renewable.energy_{it}+\beta_4surface.temp_{it}+\beta_5env.expenditure_{it}+u_i$$
+
+$$Carbon=\beta_0+\gamma_1tax_{it}+\gamma_2low.carbon.trade_{it}+\beta_1renewable.energy_{it}+\beta_2env.expenditure_{it}+u_i$$
 # Literature Review. 
 In this literature review, we aim to explore the background behind choosing specifically the variables environmental tax rates, government spending on environmental protection, renewable energy utilization, comparative advantage in low-carbon technology trade, forest area and carbon stocks, climate risk indicators, carbon footprint of bank loans, changes in mean sea levels, and alterations in land cover.  
 
