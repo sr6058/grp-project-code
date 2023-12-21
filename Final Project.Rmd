@@ -105,7 +105,24 @@ final_set <- na.omit(final_set)
 \newpage
 # Data Wrangling
 ## Data Description
-To determine the factors that effect the CO2 emissions in different countries over a period of 20 year, this project uses 5 different datasets contaning information about trade in low carbon technology, use of renewable energy (from all renewable energy sources), environmental texes levied in the country, the government expenditure (as a percent of GDP) on environmtnal protection and conservation and the GDP per capita (in current US Dollars) in each country. The datasets have data for approximately 200 countries spanning over 20 years, from 2000 to 2020. For any missing observations in the datasets have been eliminated for ease of running regressions and carrying out further analysis.
+To determine the factors that effect the CO2 emissions in different countries over a period of 20 year, we ase using 7 different datasets contaning information about:
+1. CO2 Emissions: We are using CO2 emissions (metric tonnes per capita) for each country as our dependent variable. As mentioned above, we are analysing the effect of various factors like trade in low carbon technology, governmenta expedniture, etc. on the CO2 emissions over a span of 20 years. This dataset was retrieved from the World Bank Data Base.
+
+2. Trade in low carbon technology: This variable meausres the comparative advantage of each country in low carbon technology that is either being imported or exported. The variable is an index, below 1 represents a low comparative advantage and above 1 represents a high comparative advantage. We have also uncluded the graph for the comparative advantage of the United States as an example for the values recorded in the dataset. In the graph, 1 is the threshold for a bad comparative advantage.
+``` {r trade in low carbon tech image}
+knitr::include_graphics("/Users/ameyabhatnagar/Desktop/Screenshot 2023-12-21 at 11.21.22 AM.png")
+```
+3. Renewable energy production: This variable records the total energy production (Megawatt) in each country from all renewable energy sources which include Bioenergy, Geothermal energy, Hydropower, Marine energy, Solar energy and Wind energy. 
+
+4. Environmental Taxes: This variable measures the total environmental taxes levied in each country as a percent of GDP. We are using this variable as a control variable in our regressions, since we are assuming exogeneity for this variable. 
+
+5. Government expenditure: This variale measures the total goverment expenditure on enrionmental protection (as a percent of GDP) across years. Governments spend on a specified set of activities including pollution abatement, protection of biodiversity landscape, waste and wastewater management, within the framework of the Classification of Functions of Government (COFOG).
+
+6. GDP per capita: This variable measures the GDP per capita for each country measures in current US Dollars. We are including this variable as an instrument for the government expenditure variable. This data was collected from the World Bank Data Base.
+
+7. Urban population: This variable measures the percent of total population that resides in urban areas. We are using this variable as an instrument for the renewable energy production variable. This data data was collected from the World Bank Data Base.
+
+The datasets for trade in low carbon technology, renewable energy production, environmental taxes and government expenditure are from IMF's Climate Change Indicators Dashboard. The datasets have data for approximately 200 countries spanning over 20 years, from 2000 to 2020. Any missing observations in the datasets have been eliminated for ease of running regressions and carrying out further analysis.
 
 # **Visualizations**. 
 
