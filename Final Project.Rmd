@@ -223,6 +223,9 @@ In the pooled regression,
 
 \newpage
 # ** Limitations**
+- There may be measurement errors in the variables used.
+- Time lag effects can be important.
+- There may be omitted variables in our regression, that also impact CO2 emissions such as 
 # ** References
 
 
