@@ -207,10 +207,19 @@ Pooled regression has the highest $R^2$ right now.
 
 \newpage
 # ** Model Interpretations**
-The adjusted $R^2$ of the fixed time effects model is the largest and hence, we decide t o go ahead woth that model. 
+The adjusted $R^2$ of the fixed time effects model is the largest and hence, we decided to go ahead with that model. 
 
 ## Choosing the Best Model  
 ## Interpretations for each coefficient
+
+In the pooled regression,
+
+1. The CO2 emissions on average for all countries is 34.29 metric tons per capita, ceteris paribus. 
+2. An increase of 1% MegaWatt of renewable energy is associated with a decrease in CO2 Emissions by 0.028 metric tons per capita, on average, ceteris paribus.
+3. An increase in 1% (% of GDP) of environmental expenditure is associated with an increase in CO2 emissions by 0.135 metric tons per capita, on average, ceteris paribus.
+4. An increase in 1% (% of GDP) of environmental tax is associated with a decrease in CO2 emissions by 0.038 metric tons per capita, on average, ceteris paribus. 
+5. An increase in 1% unit of low carbon technology trade is associated with a decrease in CO2 emissions by 0.0017 metric tons per capita, on average, ceteris paribus. 
+
 
 \newpage
 # ** Limitations**
