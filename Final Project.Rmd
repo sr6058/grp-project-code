@@ -77,6 +77,7 @@ env_tax<-read.csv("~/Documents/nyu/Final Assignment/transformed_environmental_ta
 env_exp<-read.csv("~/Documents/nyu/Final Assignment/transformed_environmental_protection_expenditures_corrected.csv", na.strings= c("NA", ".."))
 surface_temp<-read.csv("~/Documents/nyu/Final Assignment/transformed_annual_surface_temp.csv", na.strings= c("NA",".."))
 gdppercapita<-read.csv("~/Documents/nyu/Final Assignment/GDP_per_capita.csv", na.strings = c("NA", ".."))
+urban_pop <- read.csv("", na.strings = c("NA", ".."))
 ```
 
 ## **Data Merging**
@@ -92,7 +93,8 @@ final_set <- inner_join(lowcarb, renewable,by=c('Year', 'Country',
                             'ISO3'))  %>%
   inner_join(gdppercapita, by=c('Year', 'Country',
                             'ISO3')) %>%
-  inner_join(Combined_Dataset_Econometrics, by = c('Year', 'ISO3'))
+  inner_join(Combined_Dataset_Econometrics, by = c('Year', 'ISO3')) %>%
+  inner_join(urban_pop, by = c('Year', 'ISO3'))
   
 ```
 ## **Data Renaming**
@@ -162,11 +164,16 @@ cleaned_data <- final_set %>%
 ## Instrumental Variables
 
 The $gdp$ variable in the final set is actually GDP per capita values for each country, and is uncluded in the regression as an instrumental variable for the environmental expenditrue variable $env.exp$. The variable is significant if in the first step of two stage least squares the F-statistic exceeds 10.
-```{r}
-#set up an instrumental variable
 
-#then set up f test
+```{r instrumental variable}
+# tax is our control variable, remove trade in low carbon technology
+first_IV <- lm(renewable.energy ~ urban_pop + env.tax, data = cleaned_data)
+summary(first_IV) # f-stat : 25
 
+second_IV <- lm(env.exp ~ gdp + env.tax, data = cleaned_data)
+summary(second_IV) # f-stat : 84
+
+# They are relevant instruments
 ```
 
 # Regressions  
@@ -177,24 +184,24 @@ cleaned_data <- pdata.frame(cleaned_data, index = c("Country", "Year"), drop.ind
 ```
 ## Pooled regression
 ```{r}
-emissions.pool <- plm(CO2.Emissions ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp + gdp , data = cleaned_data, model = "pooling") 
+emissions.pool <- plm(CO2.Emissions ~ log.renewable.energy + log.env.exp + log.env.tax + log.lowcarbon | gdp + urban_pop + log.env.tax + log.lowcarbon, model = "pooling") 
 summary(fatality.pool, vcov = vcovHC) #clustered SDs
 ```
 
 ## Fixed Individual Effects Regression
 ```{r}
-emissions.fe <- plm(CO2.Emissions ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp+ gdp , data = cleaned_data, model = "within", effect="individual")
+emissions.fe <- plm(CO2.Emissions ~ log.renewable.energy + log.env.exp + log.env.tax + log.lowcarbon | gdp + urban_pop + log.env.tax + log.lowcarbon, model = "within", effect="individual")
 summary(emissions.fe, vcov = vcovHC)
 ```
 ## Fixed Time Effects Regression
 ```{r}
-emissions.te <- plm(CO2.Emissions ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp + gdp , data = cleaned_data, model = "within", effect="time")
+emissions.te <- plm(CO2.Emissions ~ log.renewable.energy + log.env.exp + log.env.tax + log.lowcarbon | gdp + urban_pop + log.env.tax + log.lowcarbon, model = "within", effect="time")
 summary(emissions.te, vcov = vcovHC)
 ```
 ## Fixed Individual and Time Effects Regression
 ```{r}
 #fte code
-emissions.fte <- plm(CO2.Emissions ~ log.env.tax + log.lowcarbon + log.renewable.energy + log.env.exp + gdp , data = cleaned_data,
+emissions.fte <- plm(CO2.Emissions ~ log.renewable.energy + log.env.exp + log.env.tax + log.lowcarbon | gdp + urban_pop + log.env.tax + log.lowcarbon, data = cleaned_data,
 model = "within", effect="twoways")
 summary(emissions.fte, vcov = vcovHC)
 
@@ -202,6 +209,8 @@ summary(emissions.fte, vcov = vcovHC)
 ```{r}
 #Stargazer code to display coefficients and AIC. Select the best model. Add interpretations below.
 ```
+Pooled regression has the highest $R^2$ right now.
+
 \newpage
 # ** Model Interpretations**
 The adjusted $R^2$ of the fixed time effects model is the largest and hence, we decide t o go ahead woth that model. 
