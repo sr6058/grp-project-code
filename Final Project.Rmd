@@ -78,7 +78,7 @@ urban_pop <- read.csv("", na.strings = c("NA", ".."))
 ## **Data Merging**
 
 ```{r}
-#add co2 please
+
 gdppercapita<-gdppercapita %>%
   rename(Country=Country.Name, ISO3=Country.Code)
 final_set <- inner_join(lowcarb, renewable,by=c('Year', 'Country',
@@ -109,10 +109,7 @@ To determine the factors that effect the CO2 emissions in different countries ov
 
 visualizing the variables being used allows us to understand if we further need to remove or clean the variables so they follow a fairly normal distributuion with no significant outliers to satisfy assumptions we make using panel data regressions.
 ```{r}
-# We can use qqplots here
-# We can also do boxplots and histograms here
-# I am providing base code, edit as needed!
-#qqcode vv important
+
 #env.tax
 qqnorm(final_set$env.tax)
 qqline(final_set$env.tax)
