@@ -12,3 +12,8 @@ m1coeffs_cl <- coeftest(m1, vcov = vcovCL, cluster = ~idcode)
 library(AER)
 tsls <- ivreg(log(packpc) ~ log(realprice) | salestax, data = data1)
 coeftest(tsls, vcov = vcovHC, type = "HC1")
+
+# pooling regression
+fatality.fte <- plm(mrall ~ beertax, data = fatality.pd,
+model = "within", effect="twoways")
+summary(fatality.fte, vcov = vcovHC)
