@@ -38,7 +38,7 @@ Furthermore, a paper by Shanazi and Shabani (2019) reported that using renewable
 
 Additionally, a study based in Iran actually found no evidence regarding the hypothesis that spending more on governmental protection aids in improving the environmental quality. However, one argument the authors use is that this could be because the proportion of government expenditure could have been too small with regards to the overall GDP of the economy, or that the country simply has too low of an income threshold for there to be significant effects of government expenditure on the environment (Moshiri& Daneshmand, 2020). Therefore in our test we test for a two sided significance, to see if government spending has any effect at all on carbondioxide emissions. 
 
-Low carbon technology intuitively signals its audience to believe an increase in its usage would be reflected by lower carbon emissions. However we want to include this in our regression to see if or if not trading this technology, that has piqued a lot of interest from governments and businesses alike, will actually have a significant effect at all on carnbon emissions(Yan et al., 2017). This test will also be two-sided.   
+Low carbon technology intuitively signals its audience to believe an increase in its usage would be reflected by lower carbon emissions. However we want to include this in our regression to see if or if not trading this technology, that has piqued a lot of interest from governments and businesses alike, will actually have a significant effect at all on carbon emissions(Yan et al., 2017). This test will also be two-sided.   
 
 # Hypotheses to be tested
 
